@@ -31,28 +31,28 @@ public class Magpie2
     public String getResponse(String statement)
     {
         String response = "";
-        if (statement.indexOf("no") >= 0)
+        if (findKeyword(statement, "no") >= 0)
         {
             response = "Why so negative?";
         }
-        else if (statement.indexOf("mother") >= 0
-                || statement.indexOf("father") >= 0
-                || statement.indexOf("sister") >= 0
-                || statement.indexOf("brother") >= 0)
+        else if (findKeyword(statement, "mother") >= 0
+                || findKeyword(statement, "father") >= 0
+                || findKeyword(statement, "sister") >= 0
+                || findKeyword(statement, "brother") >= 0)
         {
             response = "Tell me more about your family.";
         }
-        else if (statement.indexOf("dog") >= 0
-                || statement.indexOf("cat") >= 0)
+        else if (findKeyword(statement, "dog") >= 0
+                || findKeyword(statement, "cat") >= 0)
         {
             response = "Tell me more about your pets.";
         }
-        else if (statement.indexOf("Mr.") >= 0)
+        else if (findKeyword(statement, "Mr.") >= 0)
         {
             response = "He sounds like a great teacher!";
         }
-        else if (statement.indexOf("Mrs.") >= 0
-                || statement.indexOf("Ms.") >= 0)
+        else if (findKeyword(statement, "Mrs.") >= 0
+                || findKeyword(statement, "Ms.") >= 0)
         {
             response = "She sounds like a great teacher!";
         }
@@ -60,18 +60,18 @@ public class Magpie2
         {
             response = "Please say something.";
         }
-        else if (statement.indexOf("movie") >= 0)
+        else if (findKeyword(statement, "movie") >= 0)
         {
             response = "I hope you liked the movie!";
         }
-        else if (statement.indexOf("football") >= 0
-                || statement.indexOf("basketball") >= 0
-                || statement.indexOf("hockey") >= 0
-                || statement.indexOf("soccer") >= 0)
+        else if (findKeyword(statement, "football") >= 0
+                || findKeyword(statement, "basketball") >= 0
+                || findKeyword(statement, "hockey") >= 0
+                || findKeyword(statement, "soccer") >= 0)
         {
             response = "Do you like sports?";
         }
-        else if (statement.indexOf("Rome") >= 0)
+        else if (findKeyword(statement, "Rome") >= 0)
         {
             response = "As they say--do as the Romans do!";
         }
@@ -80,6 +80,91 @@ public class Magpie2
             response = getRandomResponse();
         }
         return response;
+    }
+    
+    /**
+     * Search for one word in phrase. The search is not case
+     * sensitive. This method will check that the given goal
+     * is not a substring of a longer string (so, for
+     * example, "I know" does not contain "no").
+     * 
+     * @param statement
+     *            the string to search
+     * @param goal
+     *            the string to search for
+     * @param startPos
+     *            the character of the string to begin the
+     *            search at
+     * @return the index of the first occurrence of goal in
+     *         statement or -1 if it's not found
+     */
+    private int findKeyword(String statement, String goal,
+    int startPos)
+    {
+        String phrase = statement.trim();
+        // The only change to incorporate the startPos is in
+        // the line below
+        int psn = phrase.toLowerCase().indexOf(
+                goal.toLowerCase(), startPos);
+
+        // Refinement--make sure the goal isn't part of a
+        // word
+        while (psn >= 0)
+        {
+            // Find the string of length 1 before and after
+            // the word
+            String before = " ", after = " ";
+            if (psn > 0)
+            {
+                before = phrase.substring(psn - 1, psn)
+                .toLowerCase();
+            }
+            if (psn + goal.length() < phrase.length())
+            {
+                after = phrase.substring(
+                    psn + goal.length(),
+                    psn + goal.length() + 1)
+                .toLowerCase();
+            }
+
+            // If before and after aren't letters, we've
+            // found the word
+            if (((before.compareTo("a") < 0) || (before
+                    .compareTo("z") > 0)) // before is not a
+                // letter
+            && ((after.compareTo("a") < 0) || (after
+                    .compareTo("z") > 0)))
+            {
+                return psn;
+            }
+
+            // The last position didn't work, so let's find
+            // the next, if there is one.
+            psn = phrase.indexOf(goal.toLowerCase(),
+                psn + 1);
+
+        }
+
+        return -1;
+    }
+    
+    /**
+     * Search for one word in phrase. The search is not case
+     * sensitive. This method will check that the given goal
+     * is not a substring of a longer string (so, for
+     * example, "I know" does not contain "no"). The search
+     * begins at the beginning of the string.
+     * 
+     * @param statement
+     *            the string to search
+     * @param goal
+     *            the string to search for
+     * @return the index of the first occurrence of goal in
+     *         statement or -1 if it's not found
+     */
+    private int findKeyword(String statement, String goal)
+    {
+        return findKeyword(statement, goal, 0);
     }
 
     /**
